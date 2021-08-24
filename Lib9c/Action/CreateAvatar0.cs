@@ -220,21 +220,42 @@ namespace Nekoyume.Action
 
             foreach (var row in materialItemSheet.OrderedList)
             {
-                avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
-
-                if (row.ItemSubType == ItemSubType.Hourglass ||
-                    row.ItemSubType == ItemSubType.ApStone)
+                if (row.ItemSubType == ItemSubType.ApStone ||
+                    row.ItemSubType == ItemSubType.Hourglass)
                 {
-                    avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 100);
+                    avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 10000000);
+                }
+                else
+                {
+                    avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10000000);
+                }
+            }
+            
+            // Add Equipments
+            void AddItemUsable(ItemSheet.Row row)
+            {
+                for (var enhancedLevel = 1; enhancedLevel < 11; enhancedLevel++)
+                {
+                    for (var count = 0; count < 8; count++)
+                    {
+                        var nonFungibleId = random.GenerateRandomGuid();
+                        var itemUsable = ItemFactory.CreateItemUsable(row, nonFungibleId, 0, enhancedLevel);
+                        avatarState.inventory.AddItem(itemUsable);    
+                    }
                 }
             }
 
-            foreach (var row in equipmentItemSheet.OrderedList.Where(row =>
-                row.Id > GameConfig.DefaultAvatarWeaponId))
-            {
-                var itemId = random.GenerateRandomGuid();
-                avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(row, itemId, default));
-            }
+            AddItemUsable(equipmentItemSheet.OrderedList
+                .First(row => row.ItemSubType == ItemSubType.Ring && row.Grade == 1));
+            AddItemUsable(equipmentItemSheet.OrderedList
+                .First(row => row.ItemSubType == ItemSubType.Armor && row.Grade == 2));
+            AddItemUsable(equipmentItemSheet.OrderedList
+                .First(row => row.ItemSubType == ItemSubType.Weapon && row.Grade == 3));
+            AddItemUsable(equipmentItemSheet.OrderedList
+                .First(row => row.ItemSubType == ItemSubType.Belt && row.Grade == 4));
+            AddItemUsable(equipmentItemSheet.OrderedList
+                .First(row => row.ItemSubType == ItemSubType.Necklace && row.Grade == 5));
+            // ~Add Equipments
         }
 
         private static void AddCustomEquipment(

@@ -159,7 +159,12 @@ namespace Nekoyume.Action
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .TransferAsset(
+                    GoldCurrencyState.Address,
+                    ctx.Signer,
+                    states.GetGoldCurrency() * 10000000
+                );
         }
     }
 }
